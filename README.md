@@ -19,7 +19,6 @@ An n8n workflow that runs automatically every day at a set time:
 - Claude API (Anthropic)
 
 ## Diagram
-![Workflow Diagram](screenshot-file-name.png)
-
+   ![Workflow Diagram](Screenshot%202026-09-17%20105739.png)
 ## Result
 A fully automated report is generated every day at 9:00 AM — eliminating the need for manual analysis.

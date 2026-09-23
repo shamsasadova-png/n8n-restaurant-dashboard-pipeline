@@ -1,0 +1,387 @@
+{
+  "name": "n8n-restaurant-dashboard-pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -848,
+        32
+      ],
+      "id": "63fce67a-4dec-43c6-9b0d-036aa5535ec0",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1JWO3nv_veSa6jQXAsFV35OVdUpLIxkkcq5QCTdSsVCg",
+          "mode": "list",
+          "cachedResultName": "Satis",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JWO3nv_veSa6jQXAsFV35OVdUpLIxkkcq5QCTdSsVCg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1519548705,
+          "mode": "list",
+          "cachedResultName": "Sales",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JWO3nv_veSa6jQXAsFV35OVdUpLIxkkcq5QCTdSsVCg/edit#gid=1519548705"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -544,
+        32
+      ],
+      "id": "cb3e13ab-f1cf-4160-8add-c62c3650ac21",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "qTxWjBbQQU3oBmxB",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        32
+      ],
+      "id": "e7018a4d-edab-4095-b385-26354d419ce1",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "claude-sonnet-4-6",
+          "mode": "list",
+          "cachedResultName": "claude-sonnet-4-6"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=\"Aşağıda restoranın günlük satış, anbar (inventory) və işçi (staff) datası var. Bunları birlikdə azərbaycan dilində qısa və aydin analiz et: 1) Satış trendləri və ortalamalar, 2) Apardağı ehtiyat səviyyəsində olan məhsullar (min level-dən aşağı və ya ona yaxın olanlar), 3) Işçi cədvəlində diqqət çəkən nöqtələr (kim break/passive statusdadır):\\n\\n{{ JSON.stringify($json.data) }}\""
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.anthropic",
+      "typeVersion": 1,
+      "position": [
+        144,
+        32
+      ],
+      "id": "e2101f62-12b4-4a04-95ae-2a64ec0bf6e1",
+      "name": "Message a model",
+      "credentials": {
+        "anthropicApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1JWO3nv_veSa6jQXAsFV35OVdUpLIxkkcq5QCTdSsVCg",
+          "mode": "list",
+          "cachedResultName": "Satis",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JWO3nv_veSa6jQXAsFV35OVdUpLIxkkcq5QCTdSsVCg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1811613715,
+          "mode": "list",
+          "cachedResultName": "AnalysisLog",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JWO3nv_veSa6jQXAsFV35OVdUpLIxkkcq5QCTdSsVCg/edit#gid=1811613715"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "= `{{ $now.format('yyyy-MM-dd') }}`\n",
+            "Analysis": "=`{{ $json.content[0].text }}`"
+          },
+          "matchingColumns": [
+            "Date"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Analysis",
+              "displayName": "Analysis",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        640,
+        32
+      ],
+      "id": "1ddb8e08-02f3-483d-9923-0b2a5abb6549",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "qTxWjBbQQU3oBmxB",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1JWO3nv_veSa6jQXAsFV35OVdUpLIxkkcq5QCTdSsVCg",
+          "mode": "list",
+          "cachedResultName": "Satis",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JWO3nv_veSa6jQXAsFV35OVdUpLIxkkcq5QCTdSsVCg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 932378762,
+          "mode": "list",
+          "cachedResultName": "Inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JWO3nv_veSa6jQXAsFV35OVdUpLIxkkcq5QCTdSsVCg/edit#gid=932378762"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -544,
+        -128
+      ],
+      "id": "08fbf4af-8e40-4ea5-b0aa-ff6921806de2",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "qTxWjBbQQU3oBmxB",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1JWO3nv_veSa6jQXAsFV35OVdUpLIxkkcq5QCTdSsVCg",
+          "mode": "list",
+          "cachedResultName": "Satis",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JWO3nv_veSa6jQXAsFV35OVdUpLIxkkcq5QCTdSsVCg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1682206409,
+          "mode": "list",
+          "cachedResultName": "Staff",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JWO3nv_veSa6jQXAsFV35OVdUpLIxkkcq5QCTdSsVCg/edit#gid=1682206409"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -544,
+        192
+      ],
+      "id": "21658d3f-94b1-449d-b960-8be433ea3cdb",
+      "name": "Get row(s) in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "qTxWjBbQQU3oBmxB",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -240,
+        16
+      ],
+      "id": "2a40bd7e-28f1-4985-b461-7bed4b14add3",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "sendTo": "esedsems6@gmail.com",
+        "subject": "=Hesabat {{ $now.format('dd.MM.yyyy') }}",
+        "message": "={{ $json.content[0].text.replace(/\\n/g, '<br>') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        464,
+        32
+      ],
+      "id": "b05c59d2-f1b5-4232-8074-c4f0e6956965",
+      "name": "Send a message",
+      "webhookId": "cd2d53cb-393e-4299-8d66-8984e3e1f394",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "IiXT6cIax1rXFpi3",
+          "name": "Gmail account 3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "4e200673-8ba0-4cc2-bf33-f7932f808edc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8f8e2803a19a22d5fdf7b6c6601c4e9c0ada27c8ad84f071b58ff2057fe4ffa6"
+  },
+  "nodeGroups": [],
+  "id": "5G6Og6Kn2uvI68QD",
+  "tags": []
+}

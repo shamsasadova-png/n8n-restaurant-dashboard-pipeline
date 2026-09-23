@@ -4,7 +4,7 @@ An automated daily analytics pipeline for a restaurant. It pulls sales, inventor
 and staff data from Google Sheets, uses Claude (Anthropic) to generate insights,
 **emails a daily report to the owner**, and logs the results for tracking.
 
-![Workflow](workflow-diagram.png)
+![Workflow](Screenshot 2026-09-23 123547.png)
 
 ## Problem
 Restaurant data lived in three separate spreadsheets. Reviewing them every day
